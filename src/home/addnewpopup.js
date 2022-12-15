@@ -37,10 +37,12 @@ function AddNewPopup(props) {
             schema.push(fName)
         }
         props.onSubmit(schema);
+        setOpenAddPoup(false)
+
     }
     return (
         <React.Fragment>
-            <Dialog open={openAddPopup} onClick={handleClose}>
+            <Dialog open={openAddPopup}>
                 <DialogTitle>Add Saving Segment</DialogTitle>
                 <DialogContent>
                     <form>

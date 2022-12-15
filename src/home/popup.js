@@ -7,6 +7,12 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import MenuItem from '@mui/material/MenuItem';
 import AddNewPopup from "./addnewpopup";
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import ListItemText from '@mui/material/ListItemText';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Checkbox from '@mui/material/Checkbox';
 
 const firstNames = [
     {
@@ -90,9 +96,8 @@ function DailogBox(props) {
     const [accountName, setAccountName] = useState('');
     const [city, setCity] = useState('');
     const [state, setState] = useState('');
-    const [newData, setNewData] = useState('');
     const [openAddPopup, setOpenAddPopup] = useState(false);
-
+    const [personName, setPersonName] = useState([]);
     const handleChange = (event, fieldName) => {
         switch (fieldName) {
             case 'user': setUser(event); break;
@@ -103,12 +108,11 @@ function DailogBox(props) {
             case 'accountName': setAccountName(event); break;
             case 'city': setCity(event); break;
             case 'state': setState(event); break;
-            case 'newData': setNewData(event); break;
+            case 'personName': setPersonName(event); break;
         }
     };
 
     const handleClose = () => {
-        setUser('');
         setOpenPoup(false)
     }
     const getData = (data) => {
@@ -142,8 +146,10 @@ function DailogBox(props) {
         if (state) {
             schema.push({ "state": state })
         }
-        if (newAddData.length > 0) {
-            schema.push(newAddData[0]);
+        if (personName.length>0) {
+            for(let i=0;i<personName.length-1;i++){
+                schema.push({[personName[i]]:personName[i]})
+            }
         }
         if (schema.length > 0) {
             payload = {
@@ -151,11 +157,12 @@ function DailogBox(props) {
                 "schema": schema
             }
         }
-        console.log("p", payload)
+        console.log("p", payload);
+        setOpenPoup(false)
     }
     return (
         <React.Fragment>
-            <Dialog open={openPopup} onClick={handleClose}>
+            <Dialog open={openPopup} >
                 <DialogTitle>Saving Segment</DialogTitle>
                 <DialogContent>
                     <form>
@@ -269,20 +276,26 @@ function DailogBox(props) {
                             ))}
                         </TextField>
                         {newAddData.length > 0 ?
-                            <TextField
-                                select
-                                label="Select Add New data"
-                                variant="standard"
-                                fullWidth
-                                value={newData}
-                                onChange={(e) => handleChange(e.target.value, "newData")}
-                            >
-                                {newAddData.map((option) => (
-                                    <MenuItem key={option.value} value={option.value}>
-                                        {option.label}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
+                            <FormControl sx={{ m: 1, width: 300 }}>
+                                <InputLabel id="demo-multiple-checkbox-label">Tag</InputLabel>
+                                <Select
+                                    labelId="demo-multiple-checkbox-label"
+                                    id="demo-multiple-checkbox"
+                                    multiple
+                                    value={personName}
+                                    onChange={(e) => handleChange(e.target.value, "personName")}
+                                    input={<OutlinedInput label="Tag" />}
+                                    renderValue={(selected) => selected.join(', ')}
+                                
+                                >
+                                    {newAddData.map((name) => (
+                                        <MenuItem key={name.value} value={name.value}>
+                                            <Checkbox checked={personName.indexOf(name.value) > -1} />
+                                            <ListItemText primary={name.label} />
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                             :
                             ''
                         }
